@@ -8,7 +8,6 @@
         width: 100%;
         height: 80vh;
         background: #f8fafc;
-        border-radius: 0.5rem;
         overflow: hidden;
     }
     .node-card {
@@ -69,7 +68,10 @@
         @endif
     </div>
 
-    <div class="relative">
+</div>
+
+<div class="relative">
+    <div class="-mx-4 sm:-mx-6 lg:-mx-8">
         <div id="tree-container">
             <div class="loading">
                 <svg class="animate-spin h-8 w-8 text-blue-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -79,7 +81,9 @@
                 Cargando árbol familiar...
             </div>
         </div>
-        <div class="controls">
+    </div>
+    <div class="max-w-7xl mx-auto px-4 absolute inset-0 pointer-events-none">
+        <div class="controls pointer-events-auto">
             <button onclick="zoomIn()" title="Acercar">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
