@@ -98,6 +98,7 @@ export function createTree(config) {
             .data(root.descendants())
             .enter()
             .append('g')
+            .attr('class', 'node-group')
             .attr('transform', d => `translate(${d.x},${d.y})`)
             .on('click', (event, d) => showPersonInfo(d.data));
 
@@ -186,6 +187,7 @@ export function createTree(config) {
             .attr('font-size', '14px')
             .attr('fill', '#475569')
             .attr('cursor', 'pointer')
+            .attr('class', 'toggle-symbol')
             .text('−')
             .on('click', (event, d) => {
                 event.stopPropagation();
@@ -301,7 +303,7 @@ export function createTree(config) {
                     .attr('fill', '#94a3b8')
                     .text(d.data.children_count > 0 ? `${d.data.children_count} ${translations.children}` : '');
 
-                if (d.children && d.children.length > 0) {
+                if ((d.children && d.children.length > 0) || (d._children && d._children.length > 0)) {
                     group.append('circle')
                         .attr('cx', 80)
                         .attr('cy', 5)
@@ -319,8 +321,17 @@ export function createTree(config) {
                         .attr('font-size', '14px')
                         .attr('fill', '#475569')
                         .attr('cursor', 'pointer')
-                        .text('−')
+                        .attr('class', 'toggle-symbol')
+                        .text(d.children ? '−' : '+')
                         .on('click', (event, node) => { event.stopPropagation(); toggleNode(node); });
+                }
+            });
+
+            // Update toggle symbols for all nodes (enter + update)
+            nodeGroups.merge(newNodes).each(function(d) {
+                const symbol = d3.select(this).select('text.toggle-symbol');
+                if (!symbol.empty()) {
+                    symbol.text(d.children ? '−' : '+');
                 }
             });
         }
