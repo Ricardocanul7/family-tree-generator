@@ -4,62 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Árbol Familiar')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/css/family-tree.css'])
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.querySelectorAll('.moon-icon, .sun-icon').forEach(el => el.classList.toggle('hidden'));
-            }
-        });
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            const isDark = html.classList.contains('dark');
-            if (isDark) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-            document.querySelectorAll('.moon-icon, .sun-icon').forEach(el => el.classList.toggle('hidden'));
-        }
     </script>
-    <style>
-        [x-cloak] { display: none !important; }
-
-        .dark body,
-        .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --text-muted: #9ca3af;
-            --border-color: #374151;
-        }
-
-        body { background: #f9fafb; }
-        .dark body { background: var(--bg-primary); }
-
-        .dark .bg-white { background: var(--bg-secondary) !important; }
-        .dark .border { border-color: var(--border-color) !important; }
-        .dark .border-b { border-bottom-color: var(--border-color) !important; }
-        .dark .text-gray-800 { color: var(--text-primary) !important; }
-        .dark .text-gray-700 { color: var(--text-secondary) !important; }
-        .dark .text-gray-600 { color: var(--text-muted) !important; }
-        .dark .text-gray-400 { color: #6b7280 !important; }
-        .dark .text-blue-600 { color: #60a5fa !important; }
-        .dark .hover\:text-blue-800:hover { color: #93c5fd !important; }
-        .dark .hover\:text-gray-900:hover { color: var(--text-primary) !important; }
-        .dark .bg-yellow-50 { background: #422006 !important; }
-        .dark .text-yellow-800 { color: #fde68a !important; }
-        .dark .border-yellow-200 { border-color: #78350f !important; }
-        .dark .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0,0,0,0.3) !important; }
-        .dark .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important; }
-    </style>
     @stack('styles')
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -104,6 +54,10 @@
     <main>
         @yield('content')
     </main>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.4/dist/svg2pdf.umd.min.js"></script>
+    @vite(['resources/js/app.js', 'resources/js/family-tree.js'])
     @stack('scripts')
 </body>
 </html>
