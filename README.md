@@ -1,138 +1,138 @@
-# Family Tree - Árbol Familiar Interactivo
+# Family Tree - Interactive Family Tree
 
-Aplicación web para gestionar y visualizar árboles genealógicos interactivos construida con Laravel 13, Filament Admin y D3.js.
+Web application for managing and visualizing interactive family trees built with Laravel 13, Filament Admin and D3.js.
 
-## Capturas de Pantalla
+## Screenshots
 
-| Árbol Familiar | Panel de Administración | Editar Persona |
+| Family Tree | Admin Panel | Edit Person |
 |:---:|:---:|:---:|
-| ![Árbol Familiar](docs/screenshots/family-tree-page.png) | ![Admin: Lista de Personas](docs/screenshots/people-admin-module.png) | ![Admin: Editar Persona](docs/screenshots/people-admin-module-edit.png) |
-| Vista interactiva del árbol genealógico con D3.js. Zoom, pan, colapsar/expandir nodos. | Panel Filament con listado de personas, filtros por género, foto circular y acciones. | Formulario de edición con información personal, foto y relaciones familiares. |
+| ![Family Tree](docs/screenshots/family-tree-page.png) | ![Admin: People List](docs/screenshots/people-admin-module.png) | ![Admin: Edit Person](docs/screenshots/people-admin-module-edit.png) |
+| Interactive family tree view with D3.js. Zoom, pan, collapse/expand nodes. | Filament panel with people listing, gender filters, circular photo and actions. | Edit form with personal information, photo and family relationships. |
 
-| Exportación SVG |
+| SVG Export |
 |:---:|
-| ![Exportación SVG](docs/screenshots/family-tree-export-sample.svg) |
-| El árbol se puede exportar a formato SVG vectorial. |
+| ![SVG Export](docs/screenshots/family-tree-export-sample.svg) |
+| The tree can be exported to SVG vector format. |
 
 ## Stack
 
 - **Backend:** Laravel 13 + PHP 8.3
-- **Base de datos:** MySQL 8.0
+- **Database:** MySQL 8.0
 - **Admin Panel:** Filament Admin v3
-- **Frontend:** Tailwind CSS 4 + Vite 8 + Alpine.js (vía CDN)
-- **Visualización:** D3.js v7 (árbol genealógico interactivo)
-- **Infraestructura:** Docker (PHP 8.3-fpm + Nginx + MySQL)
+- **Frontend:** Tailwind CSS 4 + Vite 8 + Alpine.js (via CDN)
+- **Visualization:** D3.js v7 (interactive family tree)
+- **Infrastructure:** Docker (PHP 8.3-fpm + Nginx + MySQL)
 
-## Requisitos
+## Requirements
 
-- Docker y Docker Compose
+- Docker and Docker Compose
 
-## Instalación y uso
+## Installation & Usage
 
 ```bash
-# 1. Clonar el repositorio
+# 1. Clone the repository
 git clone <repo-url> family-tree
 cd family-tree
 
-# 2. Iniciar contenedores
+# 2. Start containers
 docker compose up -d --build
 
-# 3. Instalar dependencias de Composer y configurar
+# 3. Install Composer dependencies and configure
 docker compose exec app composer install
 
-# 4. Configurar .env (verificar DB_HOST=db, DB_PORT=3306)
+# 4. Configure .env (verify DB_HOST=db, DB_PORT=3306)
 docker compose exec app php artisan key:generate
 
-# 5. Ejecutar migraciones y seed
+# 5. Run migrations and seed
 docker compose exec app php artisan migrate
 docker compose exec app php artisan db:seed
 
-# 6. Crear usuario admin (para el panel Filament)
+# 6. Create admin user (for Filament panel)
 docker compose exec app php artisan make:filament-user
 ```
 
-O en un solo paso:
+Or in a single step:
 ```bash
 docker compose exec app composer run setup
 ```
 
-## Acceso
+## Access
 
-| Sitio              | URL                                       |
+| Site               | URL                                       |
 |--------------------|-------------------------------------------|
-| Árbol público      | http://localhost:8080                     |
-| Admin Filament     | http://localhost:8080/admin               |
-| Árbol por persona  | http://localhost:8080/tree/{id}           |
-| API (completo)     | http://localhost:8080/api/tree/full       |
-| API (por persona)  | http://localhost:8080/api/tree/{id}       |
+| Public tree        | http://localhost:8080                     |
+| Filament Admin     | http://localhost:8080/admin               |
+| Tree by person     | http://localhost:8080/tree/{id}           |
+| API (full)         | http://localhost:8080/api/tree/full       |
+| API (by person)    | http://localhost:8080/api/tree/{id}       |
 
-> Para cambiar el puerto, edita `"8080:80"` en `docker-compose.yml`.
+> To change the port, edit `"8080:80"` in `docker-compose.yml`.
 
-## Funcionalidades
+## Features
 
-- **Árbol interactivo**: zoom, pan, nodos colapsables/expandibles con D3.js v7
-- **Panel admin Filament**: CRUD completo con foto, relaciones padres/hijos, filtros
-- **Vista por persona**: árbol desde un miembro específico
-- **Exportación SVG**: descarga el árbol como imagen vectorial
-- **Dark mode**: con persistencia en localStorage
-- **Internacionalización**: Español, English, Polski
-- **Fotos y avatares**: foto real o avatar generado automáticamente
-- **Modal informativo**: datos completos y biografía al hacer clic en un nodo
+- **Interactive tree**: zoom, pan, collapsible/expandable nodes with D3.js v7
+- **Filament admin panel**: full CRUD with photo, parent/child relationships, filters
+- **Person view**: tree from a specific member
+- **SVG export**: download the tree as a vector image
+- **Dark mode**: with localStorage persistence
+- **Internationalization**: English, Español, Polski
+- **Photos and avatars**: real photo or auto-generated avatar
+- **Info modal**: full data and biography when clicking a node
 
-## Estructura del proyecto
+## Project Structure
 
 ```
-├── docker-compose.yml       # Servicios: app (PHP), web (Nginx), db (MySQL)
-├── Dockerfile               # PHP 8.3-fpm con extensiones
-├── nginx/default.conf       # Configuración Nginx
-├── php/local.ini            # Configuración PHP
-├── docs/                    # Documentación
-│   ├── screenshots/         # Capturas de pantalla
-│   ├── ARCHITECTURE.md      # Arquitectura técnica
-│   ├── API.md               # Referencia de API
-│   └── DEPLOYMENT.md        # Guía de despliegue
-└── src/                     # Código Laravel
+├── docker-compose.yml       # Services: app (PHP), web (Nginx), db (MySQL)
+├── Dockerfile               # PHP 8.3-fpm with extensions
+├── nginx/default.conf       # Nginx configuration
+├── php/local.ini            # PHP configuration
+├── docs/                    # Documentation
+│   ├── screenshots/         # Screenshots
+│   ├── ARCHITECTURE.md      # Technical architecture
+│   ├── API.md               # API reference
+│   └── DEPLOYMENT.md        # Deployment guide
+└── src/                     # Laravel code
     ├── app/
-    │   ├── Models/Person.php           # Modelo Persona
-    │   ├── Models/Relationship.php     # Relación padre-hijo
-    │   ├── Filament/Resources/PersonResource.php  # CRUD admin
+    │   ├── Models/Person.php           # Person model
+    │   ├── Models/Relationship.php     # Parent-child relationship
+    │   ├── Filament/Resources/PersonResource.php  # Admin CRUD
     │   ├── Http/Controllers/FamilyTreeController.php
     │   └── Http/Middleware/SetLocale.php
     ├── database/
     │   ├── migrations/       # create_people, create_relationships
-    │   └── seeders/FamilyTreeSeeder.php  # 3 generaciones García
-    ├── lang/{en,es,pl}.json  # Traducciones
+    │   └── seeders/FamilyTreeSeeder.php  # 3 García generations
+    ├── lang/{en,es,pl}.json  # Translations
     ├── resources/views/
     │   ├── layouts/app.blade.php
     │   └── family-tree/
-    │       ├── index.blade.php  # Árbol general (D3.js)
-    │       └── tree.blade.php   # Árbol por persona (D3.js)
+    │       ├── index.blade.php  # General tree (D3.js)
+    │       └── tree.blade.php   # Tree by person (D3.js)
     └── routes/web.php
 ```
 
-## Comandos útiles
+## Useful Commands
 
 ```bash
-# Setup completo
+# Full setup
 docker compose exec app composer run setup
 
-# Desarrollo (servidor + logs + vite)
+# Development (server + logs + vite)
 docker compose exec app composer run dev
 
-# Ejecutar tests
+# Run tests
 docker compose exec app composer run test
 
-# Ver logs
+# View logs
 docker compose exec app tail -f storage/logs/laravel.log
 
-# Acceder a MySQL
+# Access MySQL
 docker compose exec db mysql -u family_tree_user -p family_tree
 
-# Migrar desde cero con datos
+# Fresh migrate with data
 docker compose exec app php artisan migrate:fresh --seed
 ```
 
-## Solución de problemas
+## Troubleshooting
 
 **Error 500:**
 ```bash
@@ -140,12 +140,12 @@ docker compose exec app php artisan storage:link
 docker compose exec app php artisan optimize:clear
 ```
 
-**El árbol no carga datos:** Verificar migraciones y seed.
+**Tree not loading data:** Verify migrations and seed.
 
-**Puerto 8080 en uso:** Cambiar a `"8081:80"` en `docker-compose.yml`.
+**Port 8080 in use:** Change to `"8081:80"` in `docker-compose.yml`.
 
-## Documentación adicional
+## Additional Documentation
 
-- [Arquitectura](docs/ARCHITECTURE.md) - Detalles técnicos del proyecto
-- [API](docs/API.md) - Referencia de endpoints
-- [Despliegue](docs/DEPLOYMENT.md) - Guía de producción
+- [Architecture](docs/ARCHITECTURE.md) - Technical details of the project
+- [API](docs/API.md) - Endpoint reference
+- [Deployment](docs/DEPLOYMENT.md) - Production guide

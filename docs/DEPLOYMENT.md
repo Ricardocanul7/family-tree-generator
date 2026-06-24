@@ -1,74 +1,74 @@
-# Guía de Despliegue
+# Deployment Guide
 
-## Despliegue con Docker (Producción básica)
+## Docker Deployment (Basic Production)
 
-### Requisitos
+### Requirements
 
-- Docker y Docker Compose
+- Docker and Docker Compose
 - Git
-- Dominio (opcional, con configuración DNS)
+- Domain (optional, with DNS configuration)
 
-### Pasos
+### Steps
 
 ```bash
-# 1. Clonar en el servidor
+# 1. Clone on the server
 git clone <repo-url> /opt/family-tree
 cd /opt/family-tree
 
-# 2. Configurar variables de entorno
+# 2. Configure environment variables
 cp src/.env.example src/.env
-# Editar src/.env con valores de producción:
+# Edit src/.env with production values:
 #   APP_ENV=production
 #   APP_DEBUG=false
-#   APP_URL=https://tudominio.com
+#   APP_URL=https://yourdomain.com
 #   DB_HOST=db
 #   DB_DATABASE=family_tree
 #   DB_USERNAME=family_tree_user
-#   DB_PASSWORD=<password_segura>
+#   DB_PASSWORD=<secure_password>
 
-# 3. Construir e iniciar contenedores
+# 3. Build and start containers
 docker compose up -d --build
 
-# 4. Instalar dependencias
+# 4. Install dependencies
 docker compose exec app composer install --optimize-autoloader --no-dev
 
-# 5. Generar key y optimizaciones
+# 5. Generate key and optimizations
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan storage:link
 docker compose exec app php artisan config:cache
 docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 
-# 6. Migrar y seedear
+# 6. Migrate and seed
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan db:seed --force
 
-# 7. Crear usuario admin
+# 7. Create admin user
 docker compose exec app php artisan make:filament-user
 ```
 
-### Cambiar puerto
+### Change Port
 
-Edita `docker-compose.yml` y cambia el mapeo de puertos:
+Edit `docker-compose.yml` and change the port mapping:
 
 ```yaml
 ports:
-  - "443:80"   # Para usar HTTPS con proxy reverso
+  - "443:80"   # For HTTPS with reverse proxy
 ```
 
-### Configurar HTTPS (Nginx + Let's Encrypt)
+### Configure HTTPS (Nginx + Let's Encrypt)
 
-Se recomienda usar un proxy reverso (Nginx, Caddy, Traefik) para manejar SSL.
+It is recommended to use a reverse proxy (Nginx, Caddy, Traefik) to handle SSL.
 
-**Ejemplo con Nginx como proxy reverso:**
+**Example with Nginx as reverse proxy:**
 
 ```nginx
 server {
     listen 443 ssl;
-    server_name tudominio.com;
+    server_name yourdomain.com;
 
-    ssl_certificate /etc/letsencrypt/live/tudominio.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/tudominio.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -81,39 +81,39 @@ server {
 
 server {
     listen 80;
-    server_name tudominio.com;
+    server_name yourdomain.com;
     return 301 https://$server_name$request_uri;
 }
 ```
 
 ---
 
-## Despliegue sin Docker (Producción)
+## Non-Docker Deployment (Production)
 
-### Requisitos
+### Requirements
 
-- PHP 8.3+ con extensiones: pdo_mysql, mbstring, gd, zip, intl
+- PHP 8.3+ with extensions: pdo_mysql, mbstring, gd, zip, intl
 - Composer
 - MySQL 8.0
 - Node.js + NPM
-- Servidor web (Nginx)
+- Web server (Nginx)
 
-### Pasos
+### Steps
 
 ```bash
-# 1. Clonar
+# 1. Clone
 git clone <repo-url> /var/www/family-tree
 cd /var/www/family-tree/src
 
-# 2. Dependencias
+# 2. Dependencies
 composer install --optimize-autoloader --no-dev
 npm ci && npm run build
 
-# 3. Configurar .env
+# 3. Configure .env
 cp .env.example .env
 php artisan key:generate
 
-# 4. Base de datos
+# 4. Database
 php artisan migrate --force
 php artisan db:seed --force
 
@@ -125,17 +125,17 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# 7. Permisos
+# 7. Permissions
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 ```
 
-### Nginx sin Docker
+### Nginx without Docker
 
 ```nginx
 server {
     listen 80;
-    server_name tudominio.com;
+    server_name yourdomain.com;
     root /var/www/family-tree/src/public;
 
     index index.php;
@@ -158,25 +158,25 @@ server {
 
 ---
 
-## Variables de Entorno
+## Environment Variables
 
-| Variable       | Descripción                    | Ejemplo                          |
+| Variable       | Description                    | Example                          |
 |----------------|--------------------------------|----------------------------------|
-| `APP_ENV`      | Entorno de la aplicación       | `production`                     |
-| `APP_DEBUG`    | Modo debug                     | `false`                          |
-| `APP_URL`      | URL pública de la aplicación   | `https://arbolfamiliar.com`      |
-| `DB_HOST`      | Host de MySQL (Docker: `db`)   | `db`                             |
-| `DB_PORT`      | Puerto de MySQL                | `3306`                           |
-| `DB_DATABASE`  | Nombre de la base de datos     | `family_tree`                    |
-| `DB_USERNAME`  | Usuario de MySQL               | `family_tree_user`               |
-| `DB_PASSWORD`  | Contraseña de MySQL            | `password_segura`                |
+| `APP_ENV`      | Application environment        | `production`                     |
+| `APP_DEBUG`    | Debug mode                     | `false`                          |
+| `APP_URL`      | Public application URL         | `https://familytree.com`         |
+| `DB_HOST`      | MySQL host (Docker: `db`)      | `db`                             |
+| `DB_PORT`      | MySQL port                     | `3306`                           |
+| `DB_DATABASE`  | Database name                  | `family_tree`                    |
+| `DB_USERNAME`  | MySQL user                     | `family_tree_user`               |
+| `DB_PASSWORD`  | MySQL password                 | `secure_password`                |
 
 ---
 
-## Mantenimiento
+## Maintenance
 
 ```bash
-# Actualizar código
+# Update code
 git pull
 docker compose exec app composer install --optimize-autoloader --no-dev
 docker compose exec app php artisan migrate --force
@@ -184,13 +184,13 @@ docker compose exec app php artisan config:cache
 docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 
-# Respaldar base de datos
+# Backup database
 docker compose exec db mysqldump -u family_tree_user -p family_tree > backup.sql
 
-# Ver logs
+# View logs
 docker compose logs -f
 docker compose exec app tail -f storage/logs/laravel.log
 
-# Reiniciar contenedores
+# Restart containers
 docker compose restart
 ```

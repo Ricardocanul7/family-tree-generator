@@ -1,16 +1,16 @@
-# API de Árbol Familiar
+# Family Tree API
 
 ## Endpoints
 
-### Obtener árbol completo
+### Get full tree
 
 ```
 GET /api/tree/full
 ```
 
-Retorna el árbol genealógico completo. Si hay múltiples familias raíz, las agrupa bajo un nodo "Familias".
+Returns the complete family tree. If there are multiple root families, they are grouped under a "Families" node.
 
-**Respuesta exitosa (una sola raíz):**
+**Successful response (single root):**
 ```json
 {
   "id": 1,
@@ -48,7 +48,7 @@ Retorna el árbol genealógico completo. Si hay múltiples familias raíz, las a
 }
 ```
 
-**Respuesta exitosa (múltiples raíces):**
+**Successful response (multiple roots):**
 ```json
 {
   "id": 0,
@@ -60,27 +60,27 @@ Retorna el árbol genealógico completo. Si hay múltiples familias raíz, las a
 }
 ```
 
-**Respuesta vacía:**
+**Empty response:**
 ```json
 null
 ```
 
 ---
 
-### Obtener árbol por persona
+### Get tree by person
 
 ```
 GET /api/tree/{id}
 ```
 
-Retorna el árbol desde una persona específica como raíz, con todos sus descendientes (máximo 10 niveles de profundidad).
+Returns the tree from a specific person as root, with all their descendants (maximum 10 levels deep).
 
-**Parámetros de ruta:**
-| Parámetro | Tipo | Descripción |
+**Route parameters:**
+| Parameter | Type | Description |
 |-----------|------|-------------|
-| `id`      | integer | ID de la persona raíz |
+| `id`      | integer | Root person ID |
 
-**Respuesta exitosa:**
+**Successful response:**
 ```json
 {
   "id": 3,
@@ -110,30 +110,30 @@ Retorna el árbol desde una persona específica como raíz, con todos sus descen
 }
 ```
 
-**Errores:**
-| Código | Descripción |
-|--------|-------------|
-| 404    | Persona no encontrada |
+**Errors:**
+| Code | Description |
+|------|-------------|
+| 404  | Person not found |
 
 ---
 
-## Estructura del Nodo
+## Node Structure
 
-| Campo           | Tipo           | Descripción                      |
+| Field           | Type           | Description                      |
 |-----------------|----------------|----------------------------------|
-| `id`            | integer        | ID de la persona                 |
-| `name`          | string         | Nombre completo                  |
-| `first_name`    | string         | Nombre                           |
-| `last_name`     | string         | Apellido                         |
-| `photo`         | string         | URL de la foto o avatar          |
-| `birth_date`    | string\|null   | Fecha de nacimiento (d/m/Y)      |
-| `death_date`    | string\|null   | Fecha de fallecimiento (d/m/Y)   |
-| `gender`        | string\|null   | `male` o `female`                |
-| `biography`     | string\|null   | Biografía                        |
-| `children_count`| integer        | Número de hijos                  |
-| `children`      | array          | Array de nodos hijos (recursivo) |
+| `id`            | integer        | Person ID                        |
+| `name`          | string         | Full name                        |
+| `first_name`    | string         | First name                       |
+| `last_name`     | string         | Last name                        |
+| `photo`         | string         | Photo or avatar URL              |
+| `birth_date`    | string\|null   | Birth date (d/m/Y)               |
+| `death_date`    | string\|null   | Death date (d/m/Y)               |
+| `gender`        | string\|null   | `male` or `female`               |
+| `biography`     | string\|null   | Biography                        |
+| `children_count`| integer        | Number of children               |
+| `children`      | array          | Array of child nodes (recursive) |
 
-## Límites
+## Limits
 
-- **Profundidad máxima:** 10 niveles
-- Si se supera el límite, `children` será un array vacío para ese nivel
+- **Maximum depth:** 10 levels
+- If the limit is exceeded, `children` will be an empty array for that level
