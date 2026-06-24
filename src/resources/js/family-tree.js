@@ -82,8 +82,7 @@ export function createTree(config) {
 
         setupZoom(svg, g, initialX, initialY);
 
-        g.append('g')
-            .selectAll('path')
+        g.selectAll('path.link')
             .data(root.links())
             .enter()
             .append('path')
