@@ -409,7 +409,7 @@
         if (!svg) return;
         const serializer = new XMLSerializer();
         let source = serializer.serializeToString(svg);
-        source = '<?xml version="1.0" encoding="UTF-8"?>\n' + source;
+        source = '<' + '?xml version="1.0" encoding="UTF-8"?>\n' + source;
         const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
         const link = document.createElement('a');
         link.download = 'family-tree.svg';
