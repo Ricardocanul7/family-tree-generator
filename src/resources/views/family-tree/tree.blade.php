@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Árbol de ' . $rootPerson->full_name)
+@section('title', __('Tree of') . ' ' . $rootPerson->full_name)
 
 @push('styles')
 <style>
@@ -61,11 +61,11 @@
     <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Árbol de {{ $rootPerson->full_name }}</h1>
-                <p class="text-gray-600 mt-1">Visualizando el árbol familiar desde {{ $rootPerson->first_name }}.</p>
+                <h1 class="text-2xl font-bold text-gray-800">{{ __('Tree of') }} {{ $rootPerson->full_name }}</h1>
+                <p class="text-gray-600 mt-1">{{ __('Viewing family tree from') }} {{ $rootPerson->first_name }}.</p>
             </div>
             <a href="{{ route('family-tree.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                ← Ver árbol completo
+                {{ __('← View full tree') }}
             </a>
         </div>
     </div>
@@ -80,23 +80,23 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Cargando árbol...
+                {{ __('Loading tree...') }}
             </div>
         </div>
     </div>
     <div class="max-w-7xl mx-auto px-4 absolute inset-0 pointer-events-none">
         <div class="controls pointer-events-auto">
-            <button onclick="zoomIn()" title="Acercar">
+            <button onclick="zoomIn()" title="{{ __('Zoom in') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
             </button>
-            <button onclick="zoomOut()" title="Alejar">
+            <button onclick="zoomOut()" title="{{ __('Zoom out') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                 </svg>
             </button>
-            <button onclick="resetZoom()" title="Restablecer">
+            <button onclick="resetZoom()" title="{{ __('Reset') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
@@ -113,15 +113,35 @@
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
+    const i18n = {
+        noData: '{{ __("No data available") }}',
+        errorLoading: '{{ __("Error loading tree") }}',
+        children: '{{ __("children") }}',
+        birth: '{{ __("Birth:") }}',
+        death: '{{ __("Death:") }}',
+        gender: '{{ __("Gender:") }}',
+        male: '{{ __("Male") }}',
+        female: '{{ __("Female") }}',
+        notSpecified: '{{ __("Not specified") }}',
+        childrenLabel: '{{ __("Children:") }}',
+        biography: '{{ __("Biography") }}',
+        viewFullTree: '{{ __("View full tree of") }}',
+        n: '{{ __("N.") }}',
+    };
+
     const url = '{{ route("family-tree.data", $rootPerson) }}';
 
     async function loadTree() {
         try {
             const response = await fetch(url);
             const data = await response.json();
+            if (!data) {
+                document.getElementById('tree-container').innerHTML = '<div class="loading">' + i18n.noData + '</div>';
+                return;
+            }
             renderTree(data);
         } catch (error) {
-            document.getElementById('tree-container').innerHTML = '<div class="loading text-red-500">Error al cargar el árbol</div>';
+            document.getElementById('tree-container').innerHTML = '<div class="loading text-red-500">' + i18n.errorLoading + '</div>';
         }
     }
 
@@ -227,7 +247,7 @@
         nodes.append('text')
             .attr('x', -35).attr('y', 30)
             .attr('font-size', '11px').attr('fill', '#94a3b8')
-            .text(d => d.data.children_count > 0 ? `${d.data.children_count} hijos` : '');
+            .text(d => d.data.children_count > 0 ? `${d.data.children_count} ${i18n.children}` : '');
 
         nodes.filter(d => d.children && d.children.length > 0)
             .append('circle')
@@ -294,11 +314,11 @@
                 g.append('text').attr('x', -35).attr('y', 13).attr('font-size', '11px').attr('fill', '#64748b')
                     .text(() => {
                         if (d.data.birth_date && d.data.death_date) return `${d.data.birth_date} - ${d.data.death_date}`;
-                        if (d.data.birth_date) return `N. ${d.data.birth_date}`;
+                if (d.data.birth_date) return i18n.n + ' ' + d.data.birth_date;
                         return '';
                     });
                 g.append('text').attr('x', -35).attr('y', 30).attr('font-size', '11px').attr('fill', '#94a3b8')
-                    .text(d.data.children_count > 0 ? `${d.data.children_count} hijos` : '');
+                    .text(d.data.children_count > 0 ? `${d.data.children_count} ${i18n.children}` : '');
                 if (d.children && d.children.length > 0) {
                     g.append('circle').attr('cx', 80).attr('cy', 5).attr('r', 10)
                         .attr('fill', '#e2e8f0').attr('stroke', '#94a3b8').attr('stroke-width', 1)
@@ -314,6 +334,7 @@
     function showPersonInfo(person) {
         const modal = document.getElementById('person-modal');
         const content = document.getElementById('modal-content');
+        const genderLabel = person.gender === 'male' ? i18n.male : person.gender === 'female' ? i18n.female : i18n.notSpecified;
         content.innerHTML = `
             <div class="flex justify-between items-start mb-4">
                 <h2 class="text-xl font-bold text-gray-800">${person.name}</h2>
@@ -328,14 +349,14 @@
                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=200&background=random'">
                 <div>
                     <p class="text-sm text-gray-600">
-                        ${person.birth_date ? '<span class="font-medium">Nacimiento:</span> ' + person.birth_date : ''}
-                        ${person.death_date ? '<br><span class="font-medium">Fallecimiento:</span> ' + person.death_date : ''}
+                        ${person.birth_date ? '<span class="font-medium">' + i18n.birth + '</span> ' + person.birth_date : ''}
+                        ${person.death_date ? '<br><span class="font-medium">' + i18n.death + '</span> ' + person.death_date : ''}
                     </p>
-                    <p class="text-sm text-gray-600"><span class="font-medium">Género:</span> ${person.gender === 'male' ? 'Masculino' : person.gender === 'female' ? 'Femenino' : 'No especificado'}</p>
-                    <p class="text-sm text-gray-600"><span class="font-medium">Hijos:</span> ${person.children_count || 0}</p>
+                    <p class="text-sm text-gray-600"><span class="font-medium">${i18n.gender}</span> ${genderLabel}</p>
+                    <p class="text-sm text-gray-600"><span class="font-medium">${i18n.childrenLabel}</span> ${person.children_count || 0}</p>
                 </div>
             </div>
-            ${person.biography ? `<div class="mb-4"><h3 class="font-semibold text-gray-700 mb-1">Biografía</h3><p class="text-sm text-gray-600">${person.biography}</p></div>` : ''}
+            ${person.biography ? `<div class="mb-4"><h3 class="font-semibold text-gray-700 mb-1">${i18n.biography}</h3><p class="text-sm text-gray-600">${person.biography}</p></div>` : ''}
         `;
         modal.classList.remove('hidden');
         modal.classList.add('flex');

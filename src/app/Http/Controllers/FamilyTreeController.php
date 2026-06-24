@@ -95,7 +95,7 @@ class FamilyTreeController extends Controller
 
         return response()->json([
             'id' => 0,
-            'name' => 'Familias',
+            'name' => __('Families'),
             'children' => $trees,
         ]);
     }

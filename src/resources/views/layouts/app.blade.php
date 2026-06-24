@@ -72,10 +72,24 @@
                     </svg>
                     Árbol Familiar
                 </a>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('family-tree.index') }}" class="text-gray-600 hover:text-gray-900">Ver Árbol</a>
-                    <a href="/admin" class="text-gray-600 hover:text-gray-900">Admin</a>
-                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors" title="Cambiar modo">
+                <div class="flex items-center space-x-3">
+                    <a href="{{ route('family-tree.index') }}" class="text-gray-600 hover:text-gray-900">{{ __('View Tree') }}</a>
+                    <a href="/admin" class="text-gray-600 hover:text-gray-900">{{ __('Admin') }}</a>
+
+                    <div class="relative group">
+                        <button class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors text-sm font-medium">
+                            {{ strtoupper(App::getLocale()) }}
+                        </button>
+                        <div class="absolute right-0 mt-1 w-28 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+                            @foreach (['en' => 'English', 'es' => 'Español', 'pl' => 'Polski'] as $code => $name)
+                                <a href="{{ route('language.switch', $code) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg {{ App::getLocale() === $code ? 'font-bold bg-gray-50' : '' }}">
+                                    {{ $name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors" title="{{ __('Toggle theme') }}">
                         <svg class="w-5 h-5 moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>

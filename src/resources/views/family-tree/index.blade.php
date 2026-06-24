@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Árbol Familiar')
+@section('title', __('Family Tree'))
 
 @push('styles')
 <style>
@@ -76,11 +76,11 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
     <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Árbol Familiar</h1>
-        <p class="text-gray-600 mt-1">Explora tu árbol genealógico interactivo. Haz zoom, desplázate y haz clic en los nodos para ver más información.</p>
+        <h1 class="text-2xl font-bold text-gray-800">{{ __('Family Tree') }}</h1>
+        <p class="text-gray-600 mt-1">{{ __('Explore your interactive family tree. Zoom, pan and click on nodes to see more information.') }}</p>
         @if($people->count() === 0)
             <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p class="text-yellow-800">No hay personas registradas. <a href="/admin" class="underline font-medium">Ve al panel de administración</a> para agregar miembros de la familia.</p>
+                <p class="text-yellow-800">{{ __('No people registered.') }} <a href="/admin" class="underline font-medium">{{ __('Go to admin panel') }}</a> {{ __('to add family members.') }}</p>
             </div>
         @endif
     </div>
@@ -95,23 +95,23 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Cargando árbol familiar...
+                {{ __('Loading family tree...') }}
             </div>
         </div>
     </div>
     <div class="max-w-7xl mx-auto px-4 absolute inset-0 pointer-events-none">
         <div class="controls pointer-events-auto">
-            <button onclick="zoomIn()" title="Acercar">
+            <button onclick="zoomIn()" title="{{ __('Zoom in') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
             </button>
-            <button onclick="zoomOut()" title="Alejar">
+            <button onclick="zoomOut()" title="{{ __('Zoom out') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                 </svg>
             </button>
-            <button onclick="resetZoom()" title="Restablecer">
+            <button onclick="resetZoom()" title="{{ __('Reset') }}">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
@@ -131,17 +131,33 @@
 @if($people->count() > 0)
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
+    const i18n = {
+        noData: '{{ __("No data available") }}',
+        errorLoading: '{{ __("Error loading tree") }}',
+        children: '{{ __("children") }}',
+        birth: '{{ __("Birth:") }}',
+        death: '{{ __("Death:") }}',
+        gender: '{{ __("Gender:") }}',
+        male: '{{ __("Male") }}',
+        female: '{{ __("Female") }}',
+        notSpecified: '{{ __("Not specified") }}',
+        childrenLabel: '{{ __("Children:") }}',
+        biography: '{{ __("Biography") }}',
+        viewFullTree: '{{ __("View full tree of") }}',
+        n: '{{ __("N.") }}',
+    };
+
     async function loadTree() {
         try {
             const response = await fetch('/api/tree/full');
             const data = await response.json();
             if (!data) {
-                document.getElementById('tree-container').innerHTML = '<div class="loading">No hay datos disponibles</div>';
+                document.getElementById('tree-container').innerHTML = '<div class="loading">' + i18n.noData + '</div>';
                 return;
             }
             renderTree(data);
         } catch (error) {
-            document.getElementById('tree-container').innerHTML = '<div class="loading text-red-500">Error al cargar el árbol</div>';
+            document.getElementById('tree-container').innerHTML = '<div class="loading text-red-500">' + i18n.errorLoading + '</div>';
         }
     }
 
@@ -283,7 +299,7 @@
             .attr('fill', '#64748b')
             .text(d => {
                 if (d.data.birth_date && d.data.death_date) return `${d.data.birth_date} - ${d.data.death_date}`;
-                if (d.data.birth_date) return `N. ${d.data.birth_date}`;
+                if (d.data.birth_date) return i18n.n + ' ' + d.data.birth_date;
                 return '';
             });
 
@@ -293,7 +309,7 @@
             .attr('y', 30)
             .attr('font-size', '11px')
             .attr('fill', '#94a3b8')
-            .text(d => d.data.children_count > 0 ? `${d.data.children_count} hijos` : '');
+            .text(d => d.data.children_count > 0 ? `${d.data.children_count} ${i18n.children}` : '');
 
         // Toggle button for nodes with children
         nodes.filter(d => d.children && d.children.length > 0)
@@ -423,7 +439,7 @@
                     .attr('fill', '#64748b')
                     .text(() => {
                         if (d.data.birth_date && d.data.death_date) return `${d.data.birth_date} - ${d.data.death_date}`;
-                        if (d.data.birth_date) return `N. ${d.data.birth_date}`;
+                        if (d.data.birth_date) return i18n.n + ' ' + d.data.birth_date;
                         return '';
                     });
 
@@ -463,6 +479,7 @@
         const modal = document.getElementById('person-modal');
         const content = document.getElementById('modal-content');
 
+        const genderLabel = person.gender === 'male' ? i18n.male : person.gender === 'female' ? i18n.female : i18n.notSpecified;
         content.innerHTML = `
             <div class="flex justify-between items-start mb-4">
                 <h2 class="text-xl font-bold text-gray-800">${person.name}</h2>
@@ -477,20 +494,20 @@
                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=200&background=random'">
                 <div>
                     <p class="text-sm text-gray-600">
-                        ${person.birth_date ? '<span class="font-medium">Nacimiento:</span> ' + person.birth_date : ''}
-                        ${person.death_date ? '<br><span class="font-medium">Fallecimiento:</span> ' + person.death_date : ''}
+                        ${person.birth_date ? '<span class="font-medium">' + i18n.birth + '</span> ' + person.birth_date : ''}
+                        ${person.death_date ? '<br><span class="font-medium">' + i18n.death + '</span> ' + person.death_date : ''}
                     </p>
                     <p class="text-sm text-gray-600">
-                        <span class="font-medium">Género:</span> ${person.gender === 'male' ? 'Masculino' : person.gender === 'female' ? 'Femenino' : 'No especificado'}
+                        <span class="font-medium">${i18n.gender}</span> ${genderLabel}
                     </p>
                     <p class="text-sm text-gray-600">
-                        <span class="font-medium">Hijos:</span> ${person.children_count || 0}
+                        <span class="font-medium">${i18n.childrenLabel}</span> ${person.children_count || 0}
                     </p>
                 </div>
             </div>
             ${person.biography ? `
                 <div class="mb-4">
-                    <h3 class="font-semibold text-gray-700 mb-1">Biografía</h3>
+                    <h3 class="font-semibold text-gray-700 mb-1">${i18n.biography}</h3>
                     <p class="text-sm text-gray-600">${person.biography}</p>
                 </div>
             ` : ''}
@@ -498,7 +515,7 @@
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
-                Ver árbol completo de ${person.first_name}
+                ${i18n.viewFullTree} ${person.first_name}
             </a>
         `;
 
