@@ -10,6 +10,9 @@
         background: #f8fafc;
         overflow: hidden;
     }
+    .dark #tree-container {
+        background: #1e293b;
+    }
     .node-card {
         cursor: pointer;
         transition: transform 0.2s;
@@ -24,10 +27,13 @@
         stroke: #cbd5e1;
         stroke-width: 2px;
     }
+    .dark .link {
+        stroke: #475569;
+    }
     .controls {
         position: absolute;
         top: 1rem;
-        right: 1rem;
+        right: 0;
         display: flex;
         gap: 0.5rem;
         z-index: 10;
@@ -41,9 +47,17 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         transition: all 0.2s;
     }
+    .dark .controls button {
+        background: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
     .controls button:hover {
         background: #f1f5f9;
         box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .dark .controls button:hover {
+        background: #475569;
     }
     .loading {
         display: flex;
@@ -52,6 +66,9 @@
         height: 80vh;
         font-size: 1.25rem;
         color: #64748b;
+    }
+    .dark .loading {
+        color: #94a3b8;
     }
 </style>
 @endpush
