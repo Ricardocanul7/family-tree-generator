@@ -53,6 +53,20 @@
     .dark .controls button:hover {
         background: #475569;
     }
+    @media print {
+        nav, .max-w-7xl, .controls, #person-modal { display: none !important; }
+        #tree-container {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100vh !important;
+            background: white !important;
+            overflow: visible !important;
+        }
+        #tree-container svg { width: 100%; height: 100%; }
+        body { background: white !important; }
+    }
 </style>
 @endpush
 
@@ -101,6 +115,22 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
             </button>
+            <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 self-center"></div>
+            <button onclick="window.print()" title="{{ __('Print') }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+            </button>
+            <button onclick="exportSVG()" title="{{ __('Export SVG') }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </button>
+            <button onclick="exportPDF()" title="{{ __('Export PDF') }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+            </button>
         </div>
     </div>
 </div>
@@ -112,10 +142,13 @@
 </div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.4/dist/svg2pdf.umd.min.js"></script>
 <script>
     const i18n = {
         noData: '{{ __("No data available") }}',
         errorLoading: '{{ __("Error loading tree") }}',
+        exportError: '{{ __("Export error") }}',
         children: '{{ __("children") }}',
         birth: '{{ __("Birth:") }}',
         death: '{{ __("Death:") }}',
@@ -370,6 +403,34 @@
     }
 
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    function exportSVG() {
+        const svg = document.querySelector('#tree-container svg');
+        if (!svg) return;
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svg);
+        source = '<?xml version="1.0" encoding="UTF-8"?>\n' + source;
+        const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+        const link = document.createElement('a');
+        link.download = 'family-tree.svg';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    async function exportPDF() {
+        const svg = document.querySelector('#tree-container svg');
+        if (!svg) return;
+        try {
+            const rect = svg.getBoundingClientRect();
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF(rect.width > rect.height ? 'landscape' : 'portrait', 'pt', [rect.width, rect.height]);
+            await svg2pdf(svg, pdf, {});
+            pdf.save('family-tree.pdf');
+        } catch (e) {
+            document.getElementById('tree-container').innerHTML = '<div class="loading text-red-500">' + i18n.exportError + '</div>';
+        }
+    }
 
     loadTree();
 </script>

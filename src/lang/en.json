@@ -41,5 +41,9 @@
     "Family Relations": "Family Relations",
     "Parents": "Parents",
     "Birth": "Birth",
-    "Death": "Death"
+    "Death": "Death",
+    "Print": "Print",
+    "Export SVG": "Export SVG",
+    "Export PDF": "Export PDF",
+    "Export error": "Export error"
 }
