@@ -570,7 +570,7 @@
         if (e.key === 'Escape') closeModal();
     });
 
-    function exportSVG() {
+    async function exportSVG() {
         const svg = document.querySelector('#tree-container svg');
         if (!svg) return;
         const isDark = document.documentElement.classList.contains('dark');
@@ -580,6 +580,20 @@
             path.setAttribute('stroke', linkColor);
             path.setAttribute('stroke-width', '2');
         });
+        await Promise.all(Array.from(svg.querySelectorAll('image')).map(async (img) => {
+            const href = img.getAttribute('href');
+            if (href && !href.startsWith('data:')) {
+                try {
+                    const response = await fetch(href);
+                    const blob = await response.blob();
+                    const reader = new FileReader();
+                    return new Promise(resolve => {
+                        reader.onload = () => { img.setAttribute('href', reader.result); resolve(); };
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (e) {}
+            }
+        }));
         const serializer = new XMLSerializer();
         let source = serializer.serializeToString(svg);
         source = '<' + '?xml version="1.0" encoding="UTF-8"?>\n' + source;
