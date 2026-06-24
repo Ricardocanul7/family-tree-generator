@@ -22,46 +22,46 @@ class PersonResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Información Personal')
+                Forms\Components\Section::make(__('Personal Information'))
                     ->schema([
                         Forms\Components\TextInput::make('first_name')
-                            ->label('Nombre')
+                            ->label(__('First Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('last_name')
-                            ->label('Apellido')
+                            ->label(__('Last Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('gender')
-                            ->label('Género')
+                            ->label(__('Gender'))
                             ->options([
-                                'male' => 'Masculino',
-                                'female' => 'Femenino',
+                                'male' => __('Male'),
+                                'female' => __('Female'),
                             ]),
                         Forms\Components\DatePicker::make('birth_date')
-                            ->label('Fecha de nacimiento'),
+                            ->label(__('Birth Date')),
                         Forms\Components\DatePicker::make('death_date')
-                            ->label('Fecha de fallecimiento'),
+                            ->label(__('Death Date')),
                         Forms\Components\FileUpload::make('photo')
-                            ->label('Foto')
+                            ->label(__('Photo'))
                             ->image()
                             ->directory('people')
                             ->avatar(),
                         Forms\Components\Textarea::make('biography')
-                            ->label('Biografía')
+                            ->label(__('Biography'))
                             ->columnSpanFull(),
                     ])->columns(2),
-                Forms\Components\Section::make('Relaciones Familiares')
+                Forms\Components\Section::make(__('Family Relations'))
                     ->schema([
                         Forms\Components\Select::make('parents')
-                            ->label('Padres')
+                            ->label(__('Parents'))
                             ->multiple()
                             ->relationship('parents', 'first_name')
                             ->searchable()
                             ->preload()
                             ->options(fn () => Person::query()->orderBy('first_name')->get()->mapWithKeys(fn ($p) => [$p->id => "{$p->first_name} {$p->last_name}"])),
                         Forms\Components\Select::make('children')
-                            ->label('Hijos')
+                            ->label(__('Children'))
                             ->multiple()
                             ->relationship('children', 'first_name')
                             ->searchable()
@@ -80,43 +80,43 @@ class PersonResource extends Resource
                     ->circular()
                     ->defaultImageUrl(fn (Person $record) => $record->photo_url),
                 Tables\Columns\TextColumn::make('first_name')
-                    ->label('Nombre')
+                    ->label(__('First Name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('last_name')
-                    ->label('Apellido')
+                    ->label(__('Last Name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('gender')
-                    ->label('Género')
+                    ->label(__('Gender'))
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'male' => 'Masculino',
-                        'female' => 'Femenino',
+                        'male' => __('Male'),
+                        'female' => __('Female'),
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('birth_date')
-                    ->label('Nacimiento')
+                    ->label(__('Birth'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('death_date')
-                    ->label('Fallecimiento')
+                    ->label(__('Death'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('children_count')
-                    ->label('Hijos')
+                    ->label(__('Children'))
                     ->counts('children'),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('gender')
-                    ->label('Género')
+                    ->label(__('Gender'))
                     ->options([
-                        'male' => 'Masculino',
-                        'female' => 'Femenino',
+                        'male' => __('Male'),
+                        'female' => __('Female'),
                     ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('view_tree')
-                    ->label('Ver Árbol')
+                    ->label(__('View Tree'))
                     ->icon('heroicon-o-eye')
                     ->url(fn (Person $record) => route('family-tree.person', $record)),
             ])

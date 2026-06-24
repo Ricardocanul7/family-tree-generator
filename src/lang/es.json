@@ -30,5 +30,16 @@
     "Families": "Familias",
     "← View full tree": "← Ver árbol completo",
     "N.": "N.",
-    "Language": "Idioma"
+    "Language": "Idioma",
+    "Personal Information": "Información Personal",
+    "First Name": "Nombre",
+    "Last Name": "Apellido",
+    "Gender": "Género",
+    "Birth Date": "Fecha de nacimiento",
+    "Death Date": "Fecha de fallecimiento",
+    "Photo": "Foto",
+    "Family Relations": "Relaciones Familiares",
+    "Parents": "Padres",
+    "Birth": "Nacimiento",
+    "Death": "Fallecimiento"
 }
